@@ -12,7 +12,7 @@ linear_model = W*x + b
 y = tf.placeholder(tf.float32, name="y")
 
 # 손실 함수를 정의합니다.
-loss = tf.reduce_sum(tf.square(linear_model - y)) # sum of the squares \sum{(y' - y)^2}
+loss = tf.reduce_mean(tf.square(linear_model - y)) # sum of the squares \mean{(y' - y)^2}
 # 텐서보드를 위한 요약정보(scalar)를 정의합니다.
 tf.summary.scalar('loss', loss)
 

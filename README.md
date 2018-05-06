@@ -2,7 +2,7 @@
 deep learning book code
 
 ## Chapter 2 - 텐서플로우 소개
-- 텐서플로우 설치 체크 :grin: :simple_smile: [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch02-TensorFlow_Install/2.1-install_check.py)
+- 텐서플로우 설치 체크 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch02-TensorFlow_Install/2.1-install_check.py)
 
 ## Chapter 3 - 텐서플로우 기초와 텐서보드
 - 텐서플로우 기초 – 그래프 생성과 그래프 실행 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch03-TensorFlow_Basic/3.1-graph_example.py)
@@ -12,7 +12,6 @@ deep learning book code
 
 ## Chapter 4 - 머신러닝 기초 이론들
 - 소프트맥스 회귀(Softmax Regression)를 이용한 MNIST 숫자분류기 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch04-Machine_Learning_Basic/mnist_classification_using_softmax_regression.py)
-
 
 ## Chapter 5 - 인공신경망(Artificial Neural Networks) - ANN
 - ANN을 이용한 MNIST 숫자분류기 구현 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch05-ANN/mnist_classification_using_ann.py)

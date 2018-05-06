@@ -123,7 +123,7 @@ with detection_graph.as_default():
       plt.waitforbuttonpress()
 
 # 나만의 이미지로 추론을 진행해봅시다.
-image = Image.open('test_chartreux.jpg')    
+image = Image.open('test_cat.jpg')    
 plt.figure(figsize=IMAGE_SIZE)
 plt.imshow(image)
 plt.draw()
@@ -160,9 +160,11 @@ with detection_graph.as_default():
       category_index,
       use_normalized_coordinates=True,
       line_thickness=8)
+    print("classes")
+    print(np.squeeze(classes).astype(np.int32))
     plt.figure(figsize=IMAGE_SIZE)
     plt.imshow(image_np)
     plt.draw()
     plt.waitforbuttonpress()
     # 추론 결과를 파일로 저장합니다.
-    plt.savefig("test_chartreux_result.jpg")
+    plt.savefig("test_cat.jpg")

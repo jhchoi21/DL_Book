@@ -48,7 +48,7 @@ y_pred = build_autoencoder(x)
 y_true = x
 
 # 손실함수와 옵티마이저를 정의합니다.
-loss = tf.reduce_mean(tf.pow(y_true - y_pred, 2))   # SSE(Sum of Squared Error) 손실함수
+loss = tf.reduce_mean(tf.pow(y_true - y_pred, 2))   # MSE(Mean of Squared Error) 손실함수
 train_step = tf.train.RMSPropOptimizer(learning_rate).minimize(loss)
 
 # 세션을 열고 그래프를 실행합니다.

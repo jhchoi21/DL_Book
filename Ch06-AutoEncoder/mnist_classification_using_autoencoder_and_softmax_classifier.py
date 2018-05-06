@@ -58,7 +58,7 @@ y_pred_softmax = build_softmax_classifier(extracted_features)
 
 
 # 1. Pre-Training : MNIST 데이터 재구축을 목적으로하는 손실함수와 옵티마이저를 정의합니다.
-pretraining_loss = tf.reduce_mean(tf.pow(y_true - y_pred, 2))     # squared error 함수
+pretraining_loss = tf.reduce_mean(tf.pow(y_true - y_pred, 2))     # MSE 손실 함수
 pretraining_train_step = tf.train.RMSPropOptimizer(learning_rate_RMSProp).minimize(pretraining_loss)
 # 2. Fine-Tuning :  MNIST 데이터 분류를 목적으로하는 손실함수와 옵티마이저를 정의합니다.
 finetuning_loss = tf.reduce_mean(-tf.reduce_sum(y * tf.log(y_pred_softmax), reduction_indices=[1]))     # cross-entropy loss 함수
