@@ -23,9 +23,9 @@ sess.run(tf.global_variables_initializer())
 # tf.nn.embedding_lookup 테스트 케이스 1
 input_data = np.array([7])
 print("Embedding 전 인풋데이터 : ")
-# shape : [1]
-print(input_data)
-print(input_data.shape)
+# shape : [1, 100]
+print(sess.run(tf.one_hot(input_data, vocab_size)))
+print(tf.one_hot(input_data, vocab_size).shape)
 print("Embedding 결과 : ")
 # shape : [1, 25]
 print(sess.run([embedded_inputs], feed_dict={inputs : input_data}))
@@ -35,9 +35,9 @@ print(sess.run([embedded_inputs], feed_dict={inputs : input_data})[0].shape)	# e
 # tf.nn.embedding_lookup 테스트 케이스 2
 input_data = np.array([7, 11, 67, 42, 21])
 print("Embedding 전 인풋데이터 : ")
-# shape : [5]
-print(input_data)
-print(input_data.shape)
+# shape : [5, 100]
+print(sess.run(tf.one_hot(input_data, vocab_size)))
+print(tf.one_hot(input_data, vocab_size).shape)
 print("Embedding 결과 : ")
 # shape : [5, 25]
 print(sess.run([embedded_inputs], feed_dict={inputs : input_data}))
