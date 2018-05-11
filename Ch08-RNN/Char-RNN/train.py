@@ -55,7 +55,7 @@ initial_state = cell.zero_state(state_batch_size, tf.float32)
 # 학습을 위한 tf.nn.dynamic_rnn을 선언합니다.
 # outputs : [batch_size, seq_length, hidden_size]
 outputs, final_state = tf.nn.dynamic_rnn(cell, inputs, initial_state=initial_state, dtype=tf.float32)
-# ouputs을 [batch_size * seq_length, hidden_size]] 형태로 바꿉니다.
+# ouputs을 [batch_size * seq_length, hidden_size] 형태로 변환합니다.
 output = tf.reshape(outputs, [-1, hidden_size])
 
 # 최종 출력값을 설정합니다.
@@ -97,7 +97,7 @@ with tf.Session() as sess:
                 feed_dict[c] = state[i].c
                 feed_dict[h] = state[i].h
 
-            # 한스텝 학습을 진행합니다.
+            # 학습을 한스텝 진행합니다.
             _, loss_print, state = sess.run([train_step, loss, final_state], feed_dict=feed_dict)
 
             print("{}(학습한 배치개수)/{}(학습할 배치개수), 반복(epoch): {}, 손실함수(loss): {:.3f}".format(
@@ -109,7 +109,7 @@ with tf.Session() as sess:
     print("트레이닝이 끝났습니다!")   
     
 
-    # 샘플링 시작
+    # 샘플링을 시작합니다.
     print("샘플링을 시작합니다!")
     num_sampling = 4000  # 생성할 글자(Character)의 개수를 지정합니다. 
     prime = u' '         # 시작 글자를 ' '(공백)으로 지정합니다.
@@ -136,7 +136,7 @@ with tf.Session() as sess:
         # probs_result : (1,65) -> p : (65)
         p = np.squeeze(probs_result)
 
-        # 샘플링 타입에 따라 3가지 종류로 샘플링 합니다.
+        # 샘플링 타입에 따라 3가지 종류 중 하나로 샘플링 합니다.
         # sampling_type : 0 -> 다음 글자를 예측할때 항상 argmax를 사용
         # sampling_type : 1(defualt) -> 다음 글자를 예측할때 항상 random sampling을 사용
         # sampling_type : 2 -> 다음 글자를 예측할때 이전 글자가 ' '(공백)이면 random sampling, 그렇지 않을 경우 argmax를 사용
