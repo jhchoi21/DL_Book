@@ -25,7 +25,8 @@ deep learning book code
 - CNN을 이용한 CIFAR-10 분류기 구현 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch07-CNN/cifar10_classification_using_cnn.py)
 
 ## Chapter 8 - Recurrent Neural Networks(RNN)
-- tf.nn.embedding_lookup을 이용한 Embedding 예제 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch08-RNN/7.4-embedding_example.py)
+- tf.nn.embedding_lookup을 이용한 Embedding 예제 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch08-RNN/8.4-embedding_example.py)
+- Gradient Clipping 예제 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch08-RNN/8.5-linear_regression_with_gradient_clipping.py)
 - Char-RNN을 이용한 텍스트 생성 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch08-RNN/Char-RNN/)
 
 ## Chapter 11 - 생성모델(Generative Model) - GAN(Generative Adversarial Networks)
