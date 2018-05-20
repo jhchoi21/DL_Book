@@ -7,9 +7,14 @@ cat ${HOME}
 # MS COCO 데이터셋을 다운받을 경로를 설정합니다. e.g. /home/solaris/im2txt/data/mscoco
 MSCOCO_DIR="${HOME}/im2txt/data/mscoco"
 
-# im2txt/im2txt/data 폴더에서 아래 명령어를 실행해서 MSCOCO_DIR 경로에 MS COCO 데이터셋을 다운 받습니다.
-chmod 700
+# im2txt/im2txt 폴더에서 아래 명령어를 실행해서 MSCOCO_DIR 경로에 MS COCO 데이터셋을 다운 받습니다.
+sudo chmod 700 data/download_and_preprocess_mscoco.sh
 ./download_and_preprocess_mscoco.sh ${MSCOCO_DIR}
+```
+
+아래 메세지가 출력되면 모든 프로세스가 정상적으로 완료된 것입니다.
+```shell
+2016-09-01 16:47:47.296630: Finished processing all 20267 image-caption pairs in data set 'test'.
 ```
 
 
@@ -37,13 +42,12 @@ INCEPTION_CHECKPOINT="${HOME}/im2txt/data/inception_v3.ckpt"
 # 모델의 학습결과(가중치)를 저장할 경로를 지정합니다.
 MODEL_DIR="${HOME}/im2txt/model"
 
-# 트레이닝 코드를 실행합니다.
-# Build the model.
-cd research/im2txt
-bazel build -c opt //im2txt/...
+# im2txt 모듈을 사용하기 위해 환경변수를 설정합니다.
+# {im2txt 폴더가 있는 경로}에 im2txt 폴더 경로를 지정합니다. e.g. /home/solaris/deep-learning-tensorflow-book-code/Ch09-Image_Captioning/im2txt
+export PYTHONPATH="$PYTHONPATH:{im2txt폴더가 있는 경로}"
 
-# Run the training script.
-bazel-bin/im2txt/train \
+# 트레이닝 코드를 실행합니다.
+python train.py \
   --input_file_pattern="${MSCOCO_DIR}/train-?????-of-00256" \
   --inception_checkpoint_file="${INCEPTION_CHECKPOINT}" \
   --train_dir="${MODEL_DIR}/train" \

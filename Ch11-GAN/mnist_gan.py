@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import os
 
-# MNIST 데이터를 불러옵니다.
+# MNIST 데이터를 다운로드하고 불러옵니다.
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("./mnist/data/", one_hot=True)
+mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 
 # 생성된 MNIST 이미지를 8x8 Grid로 보여주는 plot 함수를 정의합니다.
 def plot(samples):
@@ -28,15 +28,15 @@ def plot(samples):
 num_epoch = 100000
 batch_size = 64
 num_input = 28 * 28
-num_latent_variable = 100
+num_latent_variable = 100   # 잠재 변수 z의 차원
 num_hidden = 128
 learning_rate = 0.001
 
 # 플레이스 홀더를 선언합니다.
-X = tf.placeholder(tf.float32, [None, num_input])               # 인풋 이미지
-z = tf.placeholder(tf.float32, [None, num_latent_variable])     # 인풋 Latent Variable
+X = tf.placeholder(tf.float32, shape=[None, num_input])               # 인풋 이미지
+z = tf.placeholder(tf.float32, shape=[None, num_latent_variable])     # 인풋 Latent Variable
 
-# Generator 변수들 설정 
+# Generator 변수들을 설정합니다. 
 # 100 -> 128 -> 784
 with tf.variable_scope('generator'):
     # 히든 레이어 파라미터 
@@ -46,7 +46,7 @@ with tf.variable_scope('generator'):
     G_W2 = tf.Variable(tf.random_normal(shape=[num_hidden, num_input], stddev=5e-2))   
     G_b2 = tf.Variable(tf.constant(0.1, shape=[num_input]))
 
-# Discriminator 변수들 설정 
+# Discriminator 변수들을 설정합니다.
 # 784 -> 128 -> 1
 with tf.variable_scope('discriminator'):
     # 히든 레이어 파라미터
@@ -59,7 +59,7 @@ with tf.variable_scope('discriminator'):
 # Generator를 생성하는 함수를 정의합니다.
 # Inputs:
 #   X : 인풋 Latent Variable
-# Output:
+# Outputs:
 #   generated_mnist_image : 생성된 MNIST 이미지
 def build_generator(X):
     hidden_layer = tf.nn.relu((tf.matmul(X, G_W1) + G_b1))
@@ -71,7 +71,7 @@ def build_generator(X):
 # Discriminator를 생성하는 함수를 정의합니다.
 # Inputs:
 #   X : 인풋 이미지
-# Output:
+# Outputs:
 #   predicted_value : Discriminator가 판단한 True(1) or Fake(0)
 #   logits : sigmoid를 씌우기전의 출력값
 def build_discriminator(X):
@@ -105,11 +105,12 @@ gvar = [var for var in tvar if 'generator' in var.name]
 d_train_step = tf.train.AdamOptimizer(learning_rate).minimize(d_loss, var_list=dvar)
 g_train_step = tf.train.AdamOptimizer(learning_rate).minimize(g_loss, var_list=gvar)
 
-# 생성된 이미지들을 저장할 generated_outputs 폴더를 생성합니다.
+# 생성된 이미지들을 저장할 generated_output 폴더를 생성합니다.
 num_img = 0
 if not os.path.exists('generated_output/'):
     os.makedirs('generated_output/')
 
+# 그래프를 실행합니다.
 with tf.Session() as sess:
     # 변수들에 초기값을 할당합니다.
     sess.run(tf.global_variables_initializer())
@@ -118,7 +119,7 @@ with tf.Session() as sess:
     for i in range(num_epoch):
         # MNIST 이미지를 batch_size만큼 불러옵니다. 
         batch_X, _ = mnist.train.next_batch(batch_size)
-        # Latent Variable의 인풋으로 사용할 noise를 Uniform Distribution에서 batch_size만큼 샘플링합니다.
+        # Latent Variable의 인풋으로 사용할 noise를 Uniform Distribution에서 batch_size 개수만큼 샘플링합니다.
         batch_noise = np.random.uniform(-1., 1., [batch_size, 100])
 
         # 500번 반복할때마다 생성된 이미지를 저장합니다.
