@@ -29,6 +29,9 @@ deep learning book code
 - Gradient Clipping 예제 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch08-RNN/8.5-linear_regression_with_gradient_clipping.py)
 - Char-RNN을 이용한 텍스트 생성 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch08-RNN/Char-RNN/)
 
+## Chapter 9 - Image Captioning
+- im2txt - Show and Tell 모델 구현 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/tree/master/Ch09-Image_Captioning/im2txt)
+
 ## Chapter 11 - 생성모델(Generative Model) - GAN(Generative Adversarial Networks)
 - GAN을 이용한 MNIST 데이터 생성 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch11-GAN/mnist_gan.py)
 

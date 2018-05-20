@@ -54,3 +54,39 @@ python train.py \
   --train_inception=false \
   --number_of_steps=1000000
 ```
+
+### 캡션 생성하기
+트레이닝 끝나면, 아래 과정을 통해 이미지에 대한 캡션을 생성합니다.
+```shell
+
+# 모델의 체크포인트가 저장된 경로를 지정합니다.
+CHECKPOINT_PATH="${HOME}/im2txt/model/train"
+
+# 전처리 과정의 결과로 어휘(Vocabulary)가 저장된 경로를 지정합니다.
+VOCAB_FILE="${HOME}/im2txt/data/mscoco/word_counts.txt"
+
+# 이미지 캡셔닝을 진행할 이미지의 경로를 설정합니다.
+IMAGE_FILE="${HOME}/im2txt/data/mscoco/raw-data/val2014/COCO_val2014_000000224477.jpg"
+
+# GPU를 사용하지 않도록 설정합니다.
+# (만약 트레이닝을 진행중이어서 GPU 메모리 용량이 충분치 않을 경우와 같이 필요할 때만 적용하면 됩니다.)
+export CUDA_VISIBLE_DEVICES=""
+
+# im2txt 모듈을 사용하기 위해 환경변수를 설정합니다.
+# {im2txt 폴더가 있는 경로}에 im2txt 폴더 경로를 지정합니다. e.g. /home/solaris/deep-learning-tensorflow-book-code/Ch09-Image_Captioning/im2txt
+export PYTHONPATH="$PYTHONPATH:{im2txt폴더가 있는 경로}"
+
+# 캡션을 생성합니다.
+python run_inference.py \
+  --checkpoint_path=${CHECKPOINT_PATH} \
+  --vocab_file=${VOCAB_FILE} \
+  --input_files=${IMAGE_FILE}
+```
+
+학습이 잘 진행된 경우 아래와 같이 그럴듯한 캡션을 생성해내는 모습을 볼 수 있습니다.
+```shell
+Captions for image COCO_val2014_000000224477.jpg:
+  0) a man riding a wave on top of a surfboard . (p=0.040413)
+  1) a person riding a surf board on a wave (p=0.017452)
+  2) a man riding a wave on a surfboard in the ocean . (p=0.005743)
+```
