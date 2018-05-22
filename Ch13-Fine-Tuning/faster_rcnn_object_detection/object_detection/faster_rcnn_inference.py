@@ -17,7 +17,7 @@ from PIL import Image
 if tf.__version__ < '1.4.0':
   raise ImportError('Please upgrade your tensorflow installation to v1.4.* or later!')
 
-# 환경을 설정합니다.
+# 현재 디렉토리를 모듈 경로로 추가합니다.
 sys.path.append("..")
 
 # 물체인식을 위한 유틸리티 함수들을 임포트합니다.
@@ -77,7 +77,7 @@ TEST_IMAGE_PATHS = [ os.path.join(PATH_TO_TEST_IMAGES_DIR, 'image{}.jpg'.format(
 IMAGE_SIZE = (12, 8)
 
 # 불러온 테스트 이미지들을 하나씩 화면에 출력합니다.
-# 다음으로 넘어가기 위해서는 아무 버튼을 한번 입려해야합니다.(plt.waitforbuttonpress())
+# 다음으로 넘어가기 위해서는 아무 버튼을 한번 입력해야합니다.(plt.waitforbuttonpress())
 for image_path in TEST_IMAGE_PATHS:
     image = Image.open(image_path)    
     plt.figure(figsize=IMAGE_SIZE)
@@ -123,7 +123,7 @@ with detection_graph.as_default():
       plt.waitforbuttonpress()
 
 # 나만의 이미지로 추론을 진행해봅시다.
-image = Image.open('test_cat.jpg')    
+image = Image.open('test_chartreux.jpg')    
 plt.figure(figsize=IMAGE_SIZE)
 plt.imshow(image)
 plt.draw()
@@ -160,11 +160,9 @@ with detection_graph.as_default():
       category_index,
       use_normalized_coordinates=True,
       line_thickness=8)
-    print("classes")
-    print(np.squeeze(classes).astype(np.int32))
     plt.figure(figsize=IMAGE_SIZE)
     plt.imshow(image_np)
     plt.draw()
     plt.waitforbuttonpress()
     # 추론 결과를 파일로 저장합니다.
-    plt.savefig("test_cat.jpg")
+    plt.savefig("test_chartreux_result.jpg")
