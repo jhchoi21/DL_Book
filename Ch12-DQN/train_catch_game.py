@@ -8,7 +8,7 @@ import os
 
 # 학습에 필요한 설정값들을 선언합니다.
 epsilon = 1                 		# epsilon-Greedy 기법에 사용할 최초의 epsilon값
-epsilonMinimumValue = 0.001 		# epsilon의 최소값 (이 값 이하로 Decay하지 않는다)
+epsilonMinimumValue = 0.001 		# epsilon의 최소값 (이 값 이하로 Decay하지 않습니다)
 num_actions = 3               	# 에이전트가 취할 수 있는 행동의 개수 - (좌로 움직이기, 가만히 있기, 우로 움직이기)
 num_epochs = 1000 					    # 학습에 사용할 반복횟수
 hidden_size = 100 					    # 히든레이어의 노드 개수
@@ -16,20 +16,24 @@ maxMemory = 500 					      # Replay Memory의 크기
 batch_size = 50 					      # 학습에 사용할 배치 개수
 gridSize = 10 						      # 에이전트가 플레이하는 게임 화면 크기 (10x10 grid)
 state_size = gridSize * gridSize 	# 게임 환경의 현재상태 (10x10 grid)
-discount = 0.9 						        # Dicount Factor \gamma
+discount = 0.9 						        # Discount Factor \gamma
 learning_rate = 0.2					      # 러닝 레이트
 
+# s와 e사이의 랜덤한 값을 리턴하는 유틸리티 함수를 정의합니다.
+def randf(s, e):
+  return (float(random.randrange(0, (e - s) * 9999)) / 10000) + s;
+
 # DQN 모델을 정의합니다.
-# 100 -> 100 -> 3
+# 100(현재 상태 - 10x10 Grid) -> 100 -> 3(각 행동의 Q값)
 def build_DQN(x):
-  W1 = tf.Variable(tf.truncated_normal([state_size, hidden_size], stddev=1.0 / math.sqrt(float(state_size))))
-  b1 = tf.Variable(tf.truncated_normal([hidden_size], stddev=0.01))  
+  W1 = tf.Variable(tf.truncated_normal(shape=[state_size, hidden_size], stddev=1.0 / math.sqrt(float(state_size))))
+  b1 = tf.Variable(tf.truncated_normal(shape=[hidden_size], stddev=0.01))  
   input_layer = tf.nn.relu(tf.matmul(x, W1) + b1)
-  W2 = tf.Variable(tf.truncated_normal([hidden_size, hidden_size],stddev=1.0 / math.sqrt(float(hidden_size))))
-  b2 = tf.Variable(tf.truncated_normal([hidden_size], stddev=0.01))
+  W2 = tf.Variable(tf.truncated_normal(shape=[hidden_size, hidden_size],stddev=1.0 / math.sqrt(float(hidden_size))))
+  b2 = tf.Variable(tf.truncated_normal(shape=[hidden_size], stddev=0.01))
   hidden_layer = tf.nn.relu(tf.matmul(input_layer, W2) + b2)
-  W3 = tf.Variable(tf.truncated_normal([hidden_size, num_actions],stddev=1.0 / math.sqrt(float(hidden_size))))
-  b3 = tf.Variable(tf.truncated_normal([num_actions], stddev=0.01))
+  W3 = tf.Variable(tf.truncated_normal(shape=[hidden_size, num_actions],stddev=1.0 / math.sqrt(float(hidden_size))))
+  b3 = tf.Variable(tf.truncated_normal(shape=[num_actions], stddev=0.01))
   output_layer = tf.matmul(hidden_layer, W3) + b3
 
   return tf.squeeze(output_layer)
@@ -41,13 +45,9 @@ y = tf.placeholder(tf.float32, shape=[None, num_actions])
 # DQN 모델을 선언합니다.
 y_pred = build_DQN(x)
 
-# 손실 함수와 옵티마이저를 정의합니다.
-cost = tf.reduce_sum(tf.square(y-y_pred)) / (2*batch_size)
+# MSE 손실 함수와 옵티마이저를 정의합니다.
+cost = tf.reduce_sum(tf.square(y-y_pred)) / (2*batch_size)  # MSE 손실 함수
 optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
-
-# s와 e사이의 랜덤한 값을 리턴하는 유틸리티 함수를 정의합니다.
-def randf(s, e):
-  return (float(random.randrange(0, (e - s) * 9999)) / 10000) + s;
 
 # CatchGame을 수행하는 Environment를 구현합니다.
 class CatchEnvironment():
@@ -89,7 +89,7 @@ class CatchEnvironment():
     basket = stateInfo[2]
     return fruit_row, fruit_col, basket
 
-  # 에이저트가 취한 행동에 대한 보상을 줍니다.
+  # 에이전트가 취한 행동에 대한 보상을 줍니다.
   def getReward(self):
     fruitRow, fruitColumn, basket = self.getState()
     # 만약 fruit가 바닥에 닿았을 때
@@ -170,7 +170,7 @@ class ReplayMemory:
     targets = np.zeros((chosenBatchSize, num_actions))
 
     # 배치안의 값을 설정합니다.
-    for i in xrange(chosenBatchSize):
+    for i in range(chosenBatchSize):
       # 배치에 포함될 기억을 랜덤으로 선택합니다.
       randomIndex = random.randrange(0, memoryLength)
       # 현재 상태와 Q값을 불러옵니다.
@@ -213,8 +213,8 @@ def main(_):
     # 변수들의 초기값을 할당합니다.
     sess.run(tf.global_variables_initializer())
 
-    for i in xrange(num_epochs+1):
-      # 환경을 초기호하바니다.
+    for i in range(num_epochs+1):
+      # 환경을 초기화합니다.
       err = 0
       env.reset()
      
@@ -271,4 +271,3 @@ def main(_):
 if __name__ == '__main__':
   # main함수를 호출합니다.
   tf.app.run()
-
