@@ -3,12 +3,11 @@
 from __future__ import print_function
 import tensorflow as tf
 import numpy as np
+import datetime
 
 import TensorflowUtils as utils
 import read_MITSceneParsingData as scene_parsing
-import datetime
 import BatchDatsetReader as dataset
-from six.moves import xrange
 
 # 학습에 필요한 설정값들을 tf.flag.FLAGS로 지정합니다.
 FLAGS = tf.flags.FLAGS
@@ -17,15 +16,14 @@ tf.flags.DEFINE_string("logs_dir", "logs/", "path to logs directory")
 tf.flags.DEFINE_string("data_dir", "Data_zoo/MIT_SceneParsing/", "path to dataset")
 tf.flags.DEFINE_float("learning_rate", "1e-4", "Learning rate for Adam Optimizer")
 tf.flags.DEFINE_string("model_dir", "Model_zoo/", "Path to vgg model mat")
-tf.flags.DEFINE_bool('debug', "False", "Debug mode: True/ False")
-tf.flags.DEFINE_string('mode', "train", "Mode train/ test/ visualize")
+tf.flags.DEFINE_string('mode', "train", "Mode train/ visualize")
 
-# VGG-19의 파라미터가 저장된 mat파일을 받아올 경로를 지정합니다.
+# VGG-19의 파라미터가 저장된 mat 파일(MATLAB 파일)을 받아올 경로를 지정합니다.
 MODEL_URL = 'http://www.vlfeat.org/matconvnet/models/beta16/imagenet-vgg-verydeep-19.mat'
 
 # 학습에 필요한 설정값들을 지정합니다. 
 MAX_ITERATION = int(100000 + 1)
-NUM_OF_CLASSESS = 151
+NUM_OF_CLASSESS = 151       # 레이블 개수
 IMAGE_SIZE = 224
 
 # VGGNet 그래프 구조를 구축합니다.
@@ -49,17 +47,19 @@ def vgg_net(weights, image):
     current = image
     for i, name in enumerate(layers):
         kind = name[:4]
+        # Convolutin 레이어일 경우
         if kind == 'conv':
             kernels, bias = weights[i][0][0][0][0]
             # matconvnet: weights are [width, height, in_channels, out_channels]
             # tensorflow: weights are [height, width, in_channels, out_channels]
+            # MATLAB 파일의 행렬 순서를 tensorflow 행렬의 순서로 변환합니다.
             kernels = utils.get_variable(np.transpose(kernels, (1, 0, 2, 3)), name=name + "_w")
             bias = utils.get_variable(bias.reshape(-1), name=name + "_b")
             current = utils.conv2d_basic(current, kernels, bias)
+        # Activation 레이어일 경우
         elif kind == 'relu':
             current = tf.nn.relu(current, name=name)
-            if FLAGS.debug:
-                utils.add_activation_summary(current)
+        # Pooling 레이어리 경우
         elif kind == 'pool':
             current = utils.avg_pool_2x2(current)
         net[name] = current
@@ -70,10 +70,11 @@ def vgg_net(weights, image):
 def inference(image, keep_prob):
     """
     FCN 그래프 구조 정의
-    :param image: input image. 0-255 사이의 값을 가지고 있어야합니다.
-    :param keep_prob:
-    :return:
+    arguments:
+        image: 인풋 이미지 0-255 사이의 값을 가지고 있어야합니다.
+        keep_prob: 드롭아웃에서 드롭하지 않을 노드의 비율
     """
+    # 다운로드 받은 VGGNet을 불러옵니다.
     print("setting up vgg initialized conv layers ...")
     model_data = utils.get_model_data(FLAGS.model_dir, MODEL_URL)
 
@@ -98,8 +99,6 @@ def inference(image, keep_prob):
         b6 = utils.bias_variable([4096], name="b6")
         conv6 = utils.conv2d_basic(pool5, W6, b6)
         relu6 = tf.nn.relu(conv6, name="relu6")
-        if FLAGS.debug:
-            utils.add_activation_summary(relu6)
         relu_dropout6 = tf.nn.dropout(relu6, keep_prob=keep_prob)
 
         # conv7을 정의합니다. (1x1 conv)
@@ -107,15 +106,12 @@ def inference(image, keep_prob):
         b7 = utils.bias_variable([4096], name="b7")
         conv7 = utils.conv2d_basic(relu_dropout6, W7, b7)
         relu7 = tf.nn.relu(conv7, name="relu7")
-        if FLAGS.debug:
-            utils.add_activation_summary(relu7)
         relu_dropout7 = tf.nn.dropout(relu7, keep_prob=keep_prob)
 
         # conv8을 정의합니다. (1x1 conv)
         W8 = utils.weight_variable([1, 1, 4096, NUM_OF_CLASSESS], name="W8")
         b8 = utils.bias_variable([NUM_OF_CLASSESS], name="b8")
         conv8 = utils.conv2d_basic(relu_dropout7, W8, b8)
-        # annotation_pred1 = tf.argmax(conv8, dimension=3, name="prediction1")
 
         # FCN-8s를 위한 Skip Layers Fusion을 설정합니다. 
         # 이제 원본 이미지 크기로 Upsampling하기 위한 deconv 레이어를 정의합니다.
@@ -142,22 +138,10 @@ def inference(image, keep_prob):
         # fuse_2 이미지를 8배 확대합니다.
         conv_t3 = utils.conv2d_transpose_strided(fuse_2, W_t3, b_t3, output_shape=deconv_shape3, stride=8)
 
-        # 최종 prediction 결과를 결정하기 위해 마지막 activation들 중에서 argmax로 최대값을 가진 activation을 추출합니ㅏㄷ.
+        # 최종 prediction 결과를 결정하기 위해 마지막 activation들 중에서 argmax로 최대값을 가진 activation을 추출합니다.
         annotation_pred = tf.argmax(conv_t3, dimension=3, name="prediction")
 
     return tf.expand_dims(annotation_pred, dim=3), conv_t3
-
-# 파라미터를 업데이트하는 train 함수를 정의합니다.
-def train(loss_val, var_list):
-    optimizer = tf.train.AdamOptimizer(FLAGS.learning_rate)
-    grads = optimizer.compute_gradients(loss_val, var_list=var_list)
-    # 만약 debug 모드이면 TensorBoard를 위한 gradient summary를 남깁니다 .
-    if FLAGS.debug:
-        # print(len(var_list))
-        for grad, var in grads:
-            utils.add_gradient_summary(grad, var)
-    # 파라미터를 한스텝 업데이트합니다.
-    return optimizer.apply_gradients(grads)
 
 
 def main(argv=None):
@@ -177,16 +161,11 @@ def main(argv=None):
                                                                           labels=tf.squeeze(annotation, squeeze_dims=[3]),                                                                          name="entropy")))
     tf.summary.scalar("entropy", loss)
 
-    # 변수들에 regularization과 summary를 적용합니다.
-    trainable_var = tf.trainable_variables()
-    if FLAGS.debug:
-        for var in trainable_var:
-            utils.add_to_regularization_and_summary(var)
+    # 옵티마이저를 선언하고 파라미터를 한스텝 업데이트하는 train_step 연산을 정의합니다.
+    optimizer = tf.train.AdamOptimizer(FLAGS.learning_rate)
+    train_step = optimizer.minimize(loss)
 
-    # 트레이닝 연산을 선언합니다.
-    train_op = train(loss, trainable_var)
-
-    # summary 들을 하나로 merge합니다.
+    # TensorBoard를 위한 summary들을 하나로 merge합니다.
     print("Setting up summary op...")
     summary_op = tf.summary.merge_all()
 
@@ -220,26 +199,26 @@ def main(argv=None):
         print("Model restored...")
 
     if FLAGS.mode == "train":
-        for itr in xrange(MAX_ITERATION):
+        for itr in range(MAX_ITERATION):
             # 학습 데이터를 불러오고 feed_dict에 데이터를 지정합니다
             train_images, train_annotations = train_dataset_reader.next_batch(FLAGS.batch_size)
             feed_dict = {image: train_images, annotation: train_annotations, keep_probability: 0.85}
 
-            # train_op을 실행해서 파라미터를 한 스텝 업데이트합니다.
-            sess.run(train_op, feed_dict=feed_dict)
+            # train_step을 실행해서 파라미터를 한 스텝 업데이트합니다.
+            sess.run(train_step, feed_dict=feed_dict)
 
             # 10회 반복마다 training 데이터 손실 함수를 출력합니다.
             if itr % 10 == 0:
                 train_loss, summary_str = sess.run([loss, summary_op], feed_dict=feed_dict)
-                print("Step: %d, Train_loss:%g" % (itr, train_loss))
+                print("반복(Step): %d, Training 손실함수(Train_loss):%g" % (itr, train_loss))
                 summary_writer.add_summary(summary_str, itr)
 
-            # 500회 반복마다 validation 데이터 손실 함수를 출력합니다.
+            # 500회 반복마다 validation 데이터 손실 함수를 출력하고 학습된 모델의 파라미터를 model.ckpt 파일로 저자합니다.
             if itr % 500 == 0:
                 valid_images, valid_annotations = validation_dataset_reader.next_batch(FLAGS.batch_size)
                 valid_loss = sess.run(loss, feed_dict={image: valid_images, annotation: valid_annotations,
                                                        keep_probability: 1.0})
-                print("%s ---> Validation_loss: %g" % (datetime.datetime.now(), valid_loss))
+                print("%s ---> Validation 손실함수(Validation_loss): %g" % (datetime.datetime.now(), valid_loss))
                 saver.save(sess, FLAGS.logs_dir + "model.ckpt", itr)
 
     elif FLAGS.mode == "visualize":
@@ -256,6 +235,9 @@ def main(argv=None):
             utils.save_image(valid_annotations[itr].astype(np.uint8), FLAGS.logs_dir, name="gt_" + str(5+itr))
             utils.save_image(pred[itr].astype(np.uint8), FLAGS.logs_dir, name="pred_" + str(5+itr))
             print("Saved image: %d" % itr)
+
+    # 세션을 닫습니다.
+    sess.close()
 
 # main 함수를 실행합니다.
 if __name__ == "__main__":
