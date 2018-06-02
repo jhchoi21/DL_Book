@@ -12,10 +12,11 @@ import TensorflowUtils as utils
 # MIT Scene Parsing 데이터를 다운로드 받을 경로
 DATA_URL = 'http://data.csail.mit.edu/places/ADEchallenge/ADEChallengeData2016.zip'
 
-# 다운 받은 MIT Scene Parsing 데이터를 읽습니다.
+# 다운받은 MIT Scene Parsing 데이터를 읽습니다.
 def read_dataset(data_dir):
     pickle_filename = "MITSceneParsing.pickle"
     pickle_filepath = os.path.join(data_dir, pickle_filename)
+    # MITSceneParsing.pickle 파일이 없으면 다운 받은 MITSceneParsing 데이터를 pickle 파일로 저장합니다.
     if not os.path.exists(pickle_filepath):
         utils.maybe_download_and_extract(data_dir, DATA_URL, is_zipfile=True)
         SceneParsing_folder = os.path.splitext(DATA_URL.split("/")[-1])[0]
@@ -26,6 +27,7 @@ def read_dataset(data_dir):
     else:
         print ("Found pickle file!")
 
+    # 데이터가 저장된 pickle 파일을 읽고 데이터를 training 데이터와 validation 데이터로 분리합니다.
     with open(pickle_filepath, 'rb') as f:
         result = pickle.load(f)
         training_records = result['training']
@@ -34,7 +36,8 @@ def read_dataset(data_dir):
 
     return training_records, validation_records
 
-
+# training 폴더와 validation 폴더에서 
+# raw 인풋이미지(.jpg)와 annotaion된 타겟이미지(.png)를 읽어서 리스트 형태로 만들어 리턴합니다.
 def create_image_lists(image_dir):
     if not gfile.Exists(image_dir):
         print("Image directory '" + image_dir + "' not found.")
