@@ -32,6 +32,9 @@ deep learning book code
 ## Chapter 9 - Image Captioning
 - im2txt - Show and Tell 모델 구현 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/tree/master/Ch09-Image_Captioning/im2txt)
 
+## Chapter 10 - Semantic Image Segmentation
+- FCN.tensorflow - FCN(Fully Convolutional Networks) 모델 구현 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/tree/master/Ch10-Semantic_Image_Segmentation/FCN.tensorflow)
+
 ## Chapter 11 - 생성모델(Generative Model) - GAN(Generative Adversarial Networks)
 - GAN을 이용한 MNIST 데이터 생성 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch11-GAN/mnist_gan.py)
 
