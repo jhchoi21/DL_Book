@@ -82,7 +82,7 @@ with tf.Session() as sess:
   sess.run(tf.global_variables_initializer())
 
   # 만약 저장된 모델과 파라미터가 있으면 이를 불러오고 (Restore)
-  # Resotred 모델을 이용해서 테스트 데이터에 대한 정확도를 출력하고 프로그램을 종료합니다.
+  # Restored 모델을 이용해서 테스트 데이터에 대한 정확도를 출력하고 프로그램을 종료합니다.
   if ckpt and ckpt.model_checkpoint_path:
     saver.restore(sess, ckpt.model_checkpoint_path)    
     print("테스트 데이터 정확도 (Restored) : %f" % accuracy.eval(feed_dict={x: mnist.test.images, y: mnist.test.labels}))
@@ -93,7 +93,7 @@ with tf.Session() as sess:
   for step in range(10000):
     # 50개씩 MNIST 데이터를 불러옵니다.
     batch = mnist.train.next_batch(50)
-    # 100 Step마다 training 데이터셋에 대한 정확도를 출력하고 모델과 파라미터를 저장합니다.
+    # 100 Step마다 training 데이터셋에 대한 정확도를 출력하고 tf.train.Saver를 이용해서 모델과 파라미터를 저장합니다.
     if step % 100 == 0:      
       saver.save(sess, checkpoint_path, global_step=step)
       train_accuracy = accuracy.eval(feed_dict={x: batch[0], y: batch[1]})
