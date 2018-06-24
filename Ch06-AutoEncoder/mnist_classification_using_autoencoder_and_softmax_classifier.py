@@ -20,8 +20,8 @@ hidden1_size = 128        # 첫번째 히든레이어의 노드 개수
 hidden2_size = 64        # 두번째 히든레이어의 노드 개수 
 
 # 입력을 받기 위한 플레이스홀더를 정의합니다.
-x = tf.placeholder("float", [None, input_size])      # 인풋을 위한 플레이스홀더를 정의합니다.
-y = tf.placeholder(tf.float32, [None, 10])           # True MNIST 숫자값
+x = tf.placeholder(tf.float32, shape=[None, input_size])      # 인풋을 위한 플레이스홀더를 정의합니다.
+y = tf.placeholder(tf.float32, shape=[None, 10])           # True MNIST 숫자값
 
 # Autoencoder 구조를 정의합니다.
 def build_autoencoder(x):
