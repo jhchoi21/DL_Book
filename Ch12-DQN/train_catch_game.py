@@ -11,7 +11,7 @@ epsilon = 1                 		# epsilon-Greedy 기법에 사용할 최초의 eps
 epsilonMinimumValue = 0.001 		# epsilon의 최소값 (이 값 이하로 Decay하지 않습니다)
 num_actions = 3               	# 에이전트가 취할 수 있는 행동의 개수 - (좌로 움직이기, 가만히 있기, 우로 움직이기)
 num_epochs = 1000 					    # 학습에 사용할 반복횟수
-hidden_size = 100 					    # 히든레이어의 노드 개수
+hidden_size = 128 					    # 히든레이어의 노드 개수
 maxMemory = 500 					      # Replay Memory의 크기
 batch_size = 50 					      # 학습에 사용할 배치 개수
 gridSize = 10 						      # 에이전트가 플레이하는 게임 화면 크기 (10x10 grid)
@@ -24,17 +24,17 @@ def randf(s, e):
   return (float(random.randrange(0, (e - s) * 9999)) / 10000) + s;
 
 # DQN 모델을 정의합니다.
-# 100(현재 상태 - 10x10 Grid) -> 100 -> 3(각 행동의 Q값)
+# 100(현재 상태 - 10x10 Grid) -> 128 -> 128 -> 3(각 행동의 Q값)
 def build_DQN(x):
   W1 = tf.Variable(tf.truncated_normal(shape=[state_size, hidden_size], stddev=1.0 / math.sqrt(float(state_size))))
   b1 = tf.Variable(tf.truncated_normal(shape=[hidden_size], stddev=0.01))  
-  input_layer = tf.nn.relu(tf.matmul(x, W1) + b1)
+  H1_output = tf.nn.relu(tf.matmul(x, W1) + b1)
   W2 = tf.Variable(tf.truncated_normal(shape=[hidden_size, hidden_size],stddev=1.0 / math.sqrt(float(hidden_size))))
   b2 = tf.Variable(tf.truncated_normal(shape=[hidden_size], stddev=0.01))
-  hidden_layer = tf.nn.relu(tf.matmul(input_layer, W2) + b2)
+  H2_output = tf.nn.relu(tf.matmul(H1_output, W2) + b2)
   W3 = tf.Variable(tf.truncated_normal(shape=[hidden_size, num_actions],stddev=1.0 / math.sqrt(float(hidden_size))))
   b3 = tf.Variable(tf.truncated_normal(shape=[num_actions], stddev=0.01))
-  output_layer = tf.matmul(hidden_layer, W3) + b3
+  output_layer = tf.matmul(H2_output, W3) + b3
 
   return tf.squeeze(output_layer)
 
@@ -42,7 +42,7 @@ def build_DQN(x):
 x = tf.placeholder(tf.float32, shape=[None, state_size])
 y = tf.placeholder(tf.float32, shape=[None, num_actions])
 
-# DQN 모델을 선언합니다.
+# DQN 모델을 선언하고 예측결과를 리턴받습니다.
 y_pred = build_DQN(x)
 
 # MSE 손실 함수와 옵티마이저를 정의합니다.
@@ -130,7 +130,7 @@ class CatchEnvironment():
     self.updateState(action)
     reward = self.getReward()
     gameOver = self.isGameOver()
-    return self.observe(), reward, gameOver, self.getState()   # For purpose of the visual, I also return the state.
+    return self.observe(), reward, gameOver, self.getState()
 
 
 # Replay Memory를 class로 정의합니다.
@@ -251,7 +251,7 @@ def main(_):
         # 에이전트가 수집한 정보를 Replay Memory에 저장합니다.
         memory.remember(currentState, action, reward, nextState, gameOver)
         
-        # 현재 상태를 다음 상태로 업데이트하고 게임오버유무를 체크합니다.
+        # 현재 상태를 다음 상태로 업데이트하고 GameOver유무를 체크합니다.
         currentState = nextState
         isGameOver = gameOver
                 
