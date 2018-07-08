@@ -12,6 +12,7 @@ deep learning book code
 
 ## Chapter 4 - 머신러닝 기초 이론들
 - 소프트맥스 회귀(Softmax Regression)를 이용한 MNIST 숫자분류기 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch04-Machine_Learning_Basic/mnist_classification_using_softmax_regression.py)
+- tf.nn.sparse_softmax_cross_entropy_with_logits API를 사용한 소프트맥스 회귀(Softmax Regression)를 이용한 MNIST 숫자분류기 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch04-Machine_Learning_Basic/tf_nn_sparse_softmax_cross_entropy_with_logits_example.py)
 
 ## Chapter 5 - 인공신경망(Artificial Neural Networks) - ANN
 - ANN을 이용한 MNIST 숫자분류기 구현 [(Code)](https://github.com/solaris33/deep-learning-tensorflow-book-code/blob/master/Ch05-ANN/mnist_classification_using_ann.py)
