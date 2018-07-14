@@ -12,7 +12,7 @@ linear_model = W*x + b
 y = tf.placeholder(tf.float32)
 
 # 손실 함수를 정의합니다.
-loss = tf.reduce_mean(tf.square(linear_model - y)) # sum of the squares \mean{(y' - y)^2}
+loss = tf.reduce_mean(tf.square(linear_model - y)) # MSE 손실함수 \mean{(y' - y)^2}
 
 # 최적화를 위한 그라디언트 디센트 옵티마이저를 정의합니다.
 optimizer = tf.train.GradientDescentOptimizer(0.01)
