@@ -18,7 +18,6 @@ logits = tf.matmul(x, W) + b
 y_pred = tf.nn.softmax(logits)
 
 # cross-entropy 손실 함수와 옵티마이저를 정의합니다.
-#loss = tf.reduce_mean(-tf.reduce_sum(y * tf.log(y_pred), reduction_indices=[1]))
 #loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=y)) # tf.nn.softmax_cross_entropy_with_logits API를 이용한 구현
 loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y)) # tf.nn.sparse_softmax_cross_entropy_with_logits API를 이용한 구현
 train_step = tf.train.GradientDescentOptimizer(0.5).minimize(loss)
@@ -35,3 +34,5 @@ for i in range(1000):
 correct_prediction = tf.equal(tf.argmax(y_pred,1), y)
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 print("정확도(Accuracy): %f" % sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels})) # 정확도 : 약 91%
+
+sess.close()

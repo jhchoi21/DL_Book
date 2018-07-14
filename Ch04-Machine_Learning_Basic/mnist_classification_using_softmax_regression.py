@@ -33,3 +33,5 @@ for i in range(1000):
 correct_prediction = tf.equal(tf.argmax(y_pred,1), tf.argmax(y,1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 print("정확도(Accuracy): %f" % sess.run(accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels})) # 정확도 : 약 91%
+
+sess.close()
