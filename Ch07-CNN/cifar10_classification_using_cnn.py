@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-CIFAR-10 Convolutional Neural Networks(CNN) Example
+CIFAR-10 Convolutional Neural Networks(CNN) 예제
 
 next_batch function is copied from edo's answer
 
@@ -16,16 +16,16 @@ from tensorflow.python.keras._impl.keras.datasets.cifar10 import load_data
 
 # 다음 배치를 읽어오기 위한 next_batch 유틸리티 함수를 정의합니다.
 def next_batch(num, data, labels):
-    '''
-    `num` 개수 만큼의 랜덤한 샘플들과 레이블들을 리턴합니다.
-    '''
-    idx = np.arange(0 , len(data))
-    np.random.shuffle(idx)
-    idx = idx[:num]
-    data_shuffle = [data[ i] for i in idx]
-    labels_shuffle = [labels[ i] for i in idx]
+  '''
+  `num` 개수 만큼의 랜덤한 샘플들과 레이블들을 리턴합니다.
+  '''
+  idx = np.arange(0 , len(data))
+  np.random.shuffle(idx)
+  idx = idx[:num]
+  data_shuffle = [data[ i] for i in idx]
+  labels_shuffle = [labels[ i] for i in idx]
 
-    return np.asarray(data_shuffle), np.asarray(labels_shuffle)
+  return np.asarray(data_shuffle), np.asarray(labels_shuffle)
 
 # CNN 모델을 정의합니다. 
 def build_CNN_classifier(x):

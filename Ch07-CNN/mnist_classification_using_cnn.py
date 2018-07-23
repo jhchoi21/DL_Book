@@ -9,7 +9,7 @@ mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 
 # CNN 모델을 정의합니다. 
 def build_CNN_classifier(x):
-  # MNIST 데이터를 3차원 형태로 reshape합니다. MNIST 데이터는 grayscale 이미지기 떄문에 3번째차원(컬러채널)의 값은 1입니다. 
+  # MNIST 데이터를 3차원 형태로 reshape합니다. MNIST 데이터는 grayscale 이미지기 때문에 3번째차원(컬러채널)의 값은 1입니다. 
   x_image = tf.reshape(x, [-1, 28, 28, 1])
 
   # 첫번째 Convolution Layer 
@@ -45,7 +45,7 @@ def build_CNN_classifier(x):
   h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
 
   # Output Layer
-  # 1024개의 특징들(feature)을 10개의 클래스-숫자 0-9-로 변환합니다.
+  # 1024개의 특징들(feature)을 10개의 클래스-one-hot encoding으로 표현된 숫자 0~9-로 변환합니다.
   # 1024 -> 10
   W_output = tf.Variable(tf.truncated_normal(shape=[1024, 10], stddev=5e-2))
   b_output = tf.Variable(tf.constant(0.1, shape=[10]))
@@ -54,7 +54,7 @@ def build_CNN_classifier(x):
 
   return y_pred, logits
 
-# 인풋 아웃풋 데이터를 받기위한 플레이스홀더를 정의합니다.
+# 인풋, 아웃풋 데이터를 받기위한 플레이스홀더를 정의합니다.
 x = tf.placeholder(tf.float32, shape=[None, 784])
 y = tf.placeholder(tf.float32, shape=[None, 10])
 
@@ -82,7 +82,7 @@ with tf.Session() as sess:
     if i % 100 == 0:
       train_accuracy = accuracy.eval(feed_dict={x: batch[0], y: batch[1]})
       print("반복(Epoch): %d, 트레이닝 데이터 정확도: %f" % (i, train_accuracy))
-    # 옵티마이저를 실행해 학습을 진행합니다.
+    # 옵티마이저를 실행해 파라미터를 한스텝 업데이트합니다.
     sess.run([train_step], feed_dict={x: batch[0], y: batch[1]})
 
   # 학습이 끝나면 테스트 데이터에 대한 정확도를 출력합니다.
